@@ -1,3 +1,3 @@
 # CanaryLibraryiOS
 
-A description of this package.
+Canary library for iOS applications.
