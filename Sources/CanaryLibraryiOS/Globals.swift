@@ -48,6 +48,4 @@ let allWebTests = [facebook, cnn, wikipedia, ymedio, cnet]
 
 let stateDirectoryPath = "TransportState"
 
-let resultsFileName = "CanaryResults"
-let resultsExtension = "csv"
-let outputDirectoryName = "Output"
+let resultsFileName = "CanaryResults.csv"

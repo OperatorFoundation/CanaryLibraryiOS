@@ -90,46 +90,58 @@ class TestController
         guard let resultData = resultString.data(using: .utf8)
             else { return false }
         
-        guard let resultURL = getDocumentURL()
-        else
+        do
         {
-            print("Unable to save result data.")
-            return false
-        }
-
-        if FileManager.default.fileExists(atPath: resultURL.path)
-        {
-            // We already have a file at this address let's add out results to the end of it.
-            guard let fileHandler = FileHandle(forWritingAtPath: resultURL.path)
-                else
+            let resultDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            let resultFileURL = resultDirectory.appendingPathComponent(resultsFileName)
+            
+            if FileManager.default.fileExists(atPath: resultFileURL.path)
             {
-                uiLogger.info("\n🛑  Error creating a file handler to write to \(resultURL.path)\n")
-                return false
+                // We already have a file at this address let's add our results to the end of it.
+                guard let fileHandler = FileHandle(forWritingAtPath: resultFileURL.path)
+                    else
+                {
+                    uiLogger.info("\n🛑  Error creating a file handler to write to \(resultFileURL.path)\n")
+                    return false
+                }
+                
+                fileHandler.seekToEndOfFile()
+                fileHandler.write(resultData)
+                fileHandler.closeFile()
+                
+                uiLogger.info("\nSaved test results to file: \(resultFileURL.path)")
+                return true
             }
-            
-            fileHandler.seekToEndOfFile()
-            fileHandler.write(resultData)
-            fileHandler.closeFile()
-            
-            uiLogger.info("\nSaved test results to file: \(resultURL.path)")
-            return true
+            else
+            {
+                // Make a new csv file for our test results
+                // The first row should be our labels
+                let labelRow = "TestDate, ServerIP, Transport, Success\n"
+                guard let labelData = labelRow.data(using: .utf8)
+                    else { return false }
+                
+                // Append our results to the label row
+                let newFileData = labelData + resultData
+                
+                // Save the new file
+                let saved = FileManager.default.createFile(atPath: resultFileURL.path, contents: newFileData, attributes: nil)
+                
+                if saved
+                {
+                    print("Test results saved to file: \(resultFileURL.path)")
+                }
+                else
+                {
+                    print("Unable to save the results file.")
+                }
+                
+                return saved
+            }
         }
-        else
+        catch
         {
-            // Make a new csv file for our test results
-            // The first row should be our labels
-            let labelRow = "TestDate, ServerIP, Transport, Success\n"
-            guard let labelData = labelRow.data(using: .utf8)
-                else { return false }
-            
-            // Append our results to the label row
-            let newFileData = labelData + resultData
-            
-            // Save the new file
-            let saved = FileManager.default.createFile(atPath: resultURL.path, contents: newFileData, attributes: nil)
-            print("Test results saved? \(saved.description)")
-            
-            return saved
+            print("Failed to find the document directory. Error: \(error)")
+            return false
         }
     }
     
@@ -168,19 +180,4 @@ class TestController
         
         return dateString
     }
-    
-    func getDocumentURL() -> URL?
-    {
-        if let directoryURL = getApplicationSupportURL()
-        {
-            let documentURL = directoryURL.appendingPathComponent ("\(resultsFileName)\(getNowAsString()).\(resultsExtension)")
-            return documentURL
-        }
-        else
-        {
-            print("An error occurred while trying to create a document URL.")
-            return nil
-        }
-    }
-    
 }
