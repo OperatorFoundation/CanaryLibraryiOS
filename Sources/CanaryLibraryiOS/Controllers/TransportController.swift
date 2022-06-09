@@ -9,8 +9,8 @@ import Foundation
 import Logging
 
 import Net
-import ReplicantSwiftClient
-import ReplicantSwift
+//import ReplicantSwiftClient
+//import ReplicantSwift
 import ShadowSwift
 import Transport
 
@@ -89,25 +89,26 @@ class TransportController
     
     func launchReplicant()
     {
-        switch transport.config
-        {
-            case .replicantConfig(let replicantConfig):
-                let replicantFactory = ReplicantConnectionFactory(config: replicantConfig, log: uiLogger)
-
-                guard var replicantConnection = replicantFactory.connect(using: .tcp)
-                else
-                {
-                    print("Failed to create a Replicant connection.")
-                    return
-                }
-
-                connection = replicantConnection
-                replicantConnection.stateUpdateHandler = self.handleStateUpdate
-                replicantConnection.start(queue: transportQueue)
-                
-            default:
-                uiLogger.error("Invalid Replicant config.")
-                return
-        }
+//        switch transport.config
+//        {
+//            case .replicantConfig(let replicantConfig):
+//                let replicantFactory = ReplicantConnectionFactory(config: replicantConfig, log: uiLogger)
+//
+//                guard var replicantConnection = replicantFactory.connect(using: .tcp)
+//                else
+//                {
+//                    print("Failed to create a Replicant connection.")
+//                    return
+//                }
+//
+//                connection = replicantConnection
+//                replicantConnection.stateUpdateHandler = self.handleStateUpdate
+//                replicantConnection.start(queue: transportQueue)
+//
+//            default:
+//                uiLogger.error("Invalid Replicant config.")
+//                return
+//        }
+        print("Replicant is not currently supported.")
     }
 }

@@ -26,7 +26,7 @@
 // SOFTWARE.
 
 import Foundation
-import ReplicantSwift
+//import ReplicantSwift
 import ShadowSwift
 
 struct Transport
@@ -62,16 +62,18 @@ struct Transport
         switch newTransportType
         {
             case .replicant:
-                guard let replicantConfig = ReplicantConfig(withConfigAtPath: configPath)
-                else
-                {
-                    uiLogger.error("Failed to create a Replicant config.")
-                    return nil
-                }
-                
-                self.config = TransportConfig.replicantConfig(replicantConfig)
-                self.serverIP = replicantConfig.serverIP
-                self.port = replicantConfig.port
+//                guard let replicantConfig = ReplicantConfig(withConfigAtPath: configPath)
+//                else
+//                {
+//                    uiLogger.error("Failed to create a Replicant config.")
+//                    return nil
+//                }
+//
+//                self.config = TransportConfig.replicantConfig(replicantConfig)
+//                self.serverIP = replicantConfig.serverIP
+//                self.port = replicantConfig.port
+                uiLogger.error("Failed to create a Replicant config, Replicant is not currently supported.")
+                return nil
                 
             case .shadowsocks:
                 guard let shadowConfig = ShadowConfig(path: configPath)
@@ -96,6 +98,6 @@ enum TransportType: String
 
 enum TransportConfig
 {
-    case replicantConfig(ReplicantConfig)
+    //case replicantConfig(ReplicantConfig)
     case shadowsocksConfig(ShadowConfig)
 }

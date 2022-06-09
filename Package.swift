@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "CanaryLibraryiOS",
     platforms: [
-        .iOS(.v15)
+        .iOS(.v15), .macOS(.v10_15)
     ],
     products: [
         .library(
@@ -15,7 +15,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.4.2"),
-        .package(url: "https://github.com/OperatorFoundation/ReplicantSwiftClient.git", branch: "main"),
+        //.package(url: "https://github.com/OperatorFoundation/ReplicantSwiftClient.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/ShadowSwift.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/swift-netutils.git", from: "4.3.0"),
     ],
@@ -23,7 +23,7 @@ let package = Package(
         .target(
             name: "CanaryLibraryiOS",
             dependencies: [
-                "ReplicantSwiftClient",
+                //"ReplicantSwiftClient",
                 "ShadowSwift",
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "NetUtils", package: "swift-netutils")
