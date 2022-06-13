@@ -228,47 +228,47 @@ struct CanaryTest
                 return
             }
                 
-            for case let configDirectoryURL as URL in fileArray
+            for case let fileURL as URL in fileArray
             {
-                guard configDirectoryURL.startAccessingSecurityScopedResource() else
-                {
-                    continue
-                }
+//                guard fileURL.startAccessingSecurityScopedResource() else
+//                {
+//                    continue
+//                }
 
-                guard let resourceValues = try? configDirectoryURL.resourceValues(forKeys: Set<URLResourceKey>(keys)),
+                guard let resourceValues = try? fileURL.resourceValues(forKeys: Set<URLResourceKey>(keys)),
                     let isDirectory = resourceValues.isDirectory
                 else
                 {
-                    configDirectoryURL.stopAccessingSecurityScopedResource()
+//                    fileURL.stopAccessingSecurityScopedResource()
                     continue
                 }
 
                 if isDirectory
                 {
-                    configDirectoryURL.stopAccessingSecurityScopedResource()
+//                    fileURL.stopAccessingSecurityScopedResource()
                     continue
                 }
                 
                 for thisTransportName in possibleTransportNames
                 {
-                    let transportTestName = configDirectoryURL.deletingPathExtension().lastPathComponent
+                    let transportTestName = fileURL.deletingPathExtension().lastPathComponent
                     
                     if transportTestName.lowercased().contains(thisTransportName.lowercased())
                     {
-                        if let newTransport = Transport(name: transportTestName, typeString: thisTransportName, configPath: configDirectoryURL.path)
+                        if let newTransport = Transport(name: transportTestName, typeString: thisTransportName, configPath: fileURL.path)
                         {
                             testingTransports.append(newTransport)
                             uiLogger.info("\n✔️ \(newTransport.name) test is ready\n")
                         }
                         else
                         {
-                            uiLogger.error("⚠️ Failed to create a new transport using the provided config at \(configDirectoryURL.path)")
+                            uiLogger.error("⚠️ Failed to create a new transport using the provided config at \(fileURL.path)")
                             continue
                         }
                     }
                 }
                 
-                configDirectoryURL.stopAccessingSecurityScopedResource()
+//                fileURL.stopAccessingSecurityScopedResource()
             }
         }
         
