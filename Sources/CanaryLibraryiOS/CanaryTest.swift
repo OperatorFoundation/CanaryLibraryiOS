@@ -23,11 +23,13 @@
 import Foundation
 
 import NetUtils
+import UIKit
+import AST
 
 struct CanaryTest
 {
     var canaryTestQueue = DispatchQueue(label: "CanaryTests")
-    var configDirPath: String
+    var configDirectoryURL: URL
     var savePath: String?
     var testCount: Int = 1
     var interface: String?
@@ -165,15 +167,6 @@ struct CanaryTest
     func checkSetup() -> Bool
     {
         uiLogger.info("\n🔍 Checking your setup...\n")
-        // Does the Resources Directory Exist?
-        configDirectoryPath = configDirPath
-        uiLogger.info("\n✔️ Config directory: \(configDirectoryPath)\n")
-        guard FileManager.default.fileExists(atPath: configDirectoryPath)
-        else
-        {
-            uiLogger.error("\n‼️ Resource directory does not exist at \(configDirectoryPath).\n")
-            return false
-        }
         
         if (savePath != nil)
         {
@@ -199,50 +192,97 @@ struct CanaryTest
     
     func prepareTransports() -> Bool
     {
-        // Check the config directory for config files
-        do
+        // Start accessing a security-scoped resource.
+        guard configDirectoryURL.startAccessingSecurityScopedResource() else
         {
-            let filenames = try FileManager.default.contentsOfDirectory(atPath: configDirectoryPath)
+            uiLogger.error("\n‼️ Unable to access config directory secure URL. \n")
             
-            for thisFilename in filenames
+            return false
+        }
+
+        // Make sure you release the security-scoped resource when you finish.
+        defer
+        {
+            configDirectoryURL.stopAccessingSecurityScopedResource()
+        }
+        
+        // Does the Resources Directory Exist?
+        uiLogger.info("\n✔️ Config directory: \(configDirectoryURL.path)\n")
+        guard FileManager.default.fileExists(atPath: configDirectoryURL.path)
+        else
+        {
+            uiLogger.error("\n‼️ Config directory does not exist at \(configDirectoryURL.path).\n")
+            return false
+        }
+        
+        var error: NSError? = nil
+        NSFileCoordinator().coordinate(readingItemAt: configDirectoryURL, error: &error)
+        {
+            directoryURL in
+            
+            let keys = [URLResourceKey.isDirectoryKey]
+            
+            guard let fileArray = FileManager.default.enumerator(at: configDirectoryURL, includingPropertiesForKeys: keys) else
             {
+                uiLogger.error("\n‼️ Failed to get a list of URL's at the config directory: \(configDirectoryURL.path)\n")
+                return
+            }
+                
+            for case let fileURL as URL in fileArray
+            {
+                guard fileURL.startAccessingSecurityScopedResource() else
+                {
+                    continue
+                }
+
+                guard let resourceValues = try? fileURL.resourceValues(forKeys: Set<URLResourceKey>(keys)),
+                    let isDirectory = resourceValues.isDirectory
+                else
+                {
+                    fileURL.stopAccessingSecurityScopedResource()
+                    continue
+                }
+
+                if isDirectory
+                {
+                    fileURL.stopAccessingSecurityScopedResource()
+                    continue
+                }
+                
                 for thisTransportName in possibleTransportNames
                 {
-                    // Add the names of each config file that contains a valid transport name to allTransports
-                    if (thisFilename.lowercased().contains(thisTransportName.lowercased()))
+                    let transportTestName = fileURL.deletingPathExtension().lastPathComponent
+                    
+                    if transportTestName.lowercased().contains(thisTransportName.lowercased())
                     {
-                        let configPath = configDirectoryPath.appending("/\(thisFilename)")
-                        let configURL = URL(fileURLWithPath: thisFilename)
-                        let transportTestName = configURL.deletingPathExtension().lastPathComponent
-                        
-                        if let newTransport = Transport(name: transportTestName, typeString: thisTransportName, configPath: configPath)
+                        if let newTransport = Transport(name: transportTestName, typeString: thisTransportName, configPath: fileURL.path)
                         {
                             testingTransports.append(newTransport)
                             uiLogger.info("\n✔️ \(newTransport.name) test is ready\n")
                         }
                         else
                         {
-                            uiLogger.error("⚠️ Failed to create a new transport using the provided config at \(configPath)")
+                            uiLogger.error("⚠️ Failed to create a new transport using the provided config at \(fileURL.path)")
+                            continue
                         }
                     }
                 }
+                
+                fileURL.stopAccessingSecurityScopedResource()
             }
-            
-            guard !testingTransports.isEmpty
-            else
-            {
-                uiLogger.error("‼️ There were no valid transport configs in the provided directory. Ending test.\nConfig Directory: \(configDirectoryPath)")
-                return false
-            }
-            
-            return true
         }
-        catch
+        
+        guard !testingTransports.isEmpty
+        else
         {
-            uiLogger.error("‼️ Unable to retrieve the contents of \(configDirectoryPath): \(error)")
+            uiLogger.error("‼️ There were no valid transport configs in the provided directory. Ending test.\nConfig Directory: \(configDirectoryURL.path)")
             return false
         }
+        
+        return true
     }
 }
+
+
 
 

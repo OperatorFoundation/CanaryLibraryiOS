@@ -27,7 +27,6 @@
 
 import Foundation
 
-var configDirectoryPath = ""
 var saveDirectoryPath = ""
 
 var testingTransports = [Transport]()
