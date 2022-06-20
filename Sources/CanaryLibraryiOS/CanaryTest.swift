@@ -230,22 +230,16 @@ struct CanaryTest
                 
             for case let fileURL as URL in fileArray
             {
-//                guard fileURL.startAccessingSecurityScopedResource() else
-//                {
-//                    continue
-//                }
 
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: Set<URLResourceKey>(keys)),
                     let isDirectory = resourceValues.isDirectory
                 else
                 {
-//                    fileURL.stopAccessingSecurityScopedResource()
                     continue
                 }
 
                 if isDirectory
                 {
-//                    fileURL.stopAccessingSecurityScopedResource()
                     continue
                 }
                 
@@ -267,8 +261,6 @@ struct CanaryTest
                         }
                     }
                 }
-                
-//                fileURL.stopAccessingSecurityScopedResource()
             }
         }
         
