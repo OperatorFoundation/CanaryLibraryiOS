@@ -23,8 +23,6 @@
 import Foundation
 
 import NetUtils
-import UIKit
-import AST
 
 struct CanaryTest
 {

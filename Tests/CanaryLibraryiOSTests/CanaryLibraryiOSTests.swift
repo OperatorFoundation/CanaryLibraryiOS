@@ -30,7 +30,7 @@ final class CanaryLibraryiOSTests: XCTestCase {
             }
             
             let logger = Logger(label: "CanaryLibraryiOSExample")
-            let canary = Canary(configURL: documentDirectory, logger: logger)
+            let canary = Canary(configDirectoryURL: documentDirectory, logger: logger)
             
             canary.runTest(runAsync: true)
         }
