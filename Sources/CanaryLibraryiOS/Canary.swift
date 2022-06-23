@@ -13,8 +13,8 @@ public class Canary
         chirp = CanaryTest(configDirectoryURL: configDirectoryURL, savePath: savePath, testCount: timesToRun, interface: interface, debugPrints: debugPrints, runWebTests: runWebTests)
     }
     
-    public func runTest(runAsync: Bool = true)
+    public func runTest()
     {
-        chirp.begin(runAsync: runAsync)
+        chirp.begin()
     }
 }

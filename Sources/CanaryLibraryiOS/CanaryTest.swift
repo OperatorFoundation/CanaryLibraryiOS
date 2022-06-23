@@ -36,7 +36,7 @@ struct CanaryTest
     
     /// launch AdversaryLabClient to capture our test traffic, and run a connection test.
     ///  a csv file and song data (zipped) are saved with the test results.
-    func begin(runAsync: Bool)
+    func begin()
     {
         print("\n Attempting to run tests...\n")
         
@@ -66,14 +66,7 @@ struct CanaryTest
         
         uiLogger.info("Selected an interface for running test: \(interfaceName)\n")
         
-        if runAsync
-        {
-            canaryTestQueue.async
-            {
-                runAllTests(interfaceName: interfaceName, runWebTests: runWebTests)
-            }
-        }
-        else
+        canaryTestQueue.async
         {
             runAllTests(interfaceName: interfaceName, runWebTests: runWebTests)
         }
