@@ -58,7 +58,6 @@ struct CanaryTest
             guard let name = guessUserInterface()
             else { return }
             
-            
             interfaceName = name
             
             print("\nWe will try using the \(interfaceName) interface. If Canary fails to capture data, it may be because this is not the correct interface. Please try running the program again using the interface flag and one of the other listed interfaces.\n")

@@ -34,10 +34,6 @@ class TestController
 {
     static let sharedInstance = TestController()
     
-    init()
-    {
-    }
-    
     func runSwiftTransportTest(forTransport transport: Transport) -> TestResult?
     {
         let transportController = TransportController(transport: transport, log: uiLogger)
