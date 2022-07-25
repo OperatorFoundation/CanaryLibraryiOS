@@ -44,34 +44,34 @@ struct CanaryTest
         guard checkSetup() else { return }
         
         
-        var interfaceName: String
-        
-        if interface != nil
-        {
-            // Use the user provided interface name
-            interfaceName = interface!
-            print("Running tests using the user selected interface \(interfaceName)")
-        }
-        else
-        {
-            // Try to guess the interface, if we cannot then give up
-            guard let name = guessUserInterface()
-            else { return }
-            
-            interfaceName = name
-            
-            print("\nWe will try using the \(interfaceName) interface. If Canary fails to capture data, it may be because this is not the correct interface. Please try running the program again using the interface flag and one of the other listed interfaces.\n")
-        }
-        
-        uiLogger.info("Selected an interface for running test: \(interfaceName)\n")
+//        var interfaceName: String
+//
+//        if interface != nil
+//        {
+//            // Use the user provided interface name
+//            interfaceName = interface!
+//            print("Running tests using the user selected interface \(interfaceName)")
+//        }
+//        else
+//        {
+//            // Try to guess the interface, if we cannot then give up
+//            guard let name = guessUserInterface()
+//            else { return }
+//
+//            interfaceName = name
+//
+//            print("\nWe will try using the \(interfaceName) interface. If Canary fails to capture data, it may be because this is not the correct interface. Please try running the program again using the interface flag and one of the other listed interfaces.\n")
+//        }
+//
+//        uiLogger.info("Selected an interface for running test: \(interfaceName)\n")
         
         canaryTestQueue.async
         {
-            runAllTests(interfaceName: interfaceName, runWebTests: runWebTests)
+            runAllTests(runWebTests: runWebTests)
         }
     }
     
-    func runAllTests(interfaceName: String, runWebTests: Bool)
+    func runAllTests(runWebTests: Bool)
     {
         for i in 1...testCount
         {
@@ -80,7 +80,7 @@ struct CanaryTest
             for transport in testingTransports
             {
                 uiLogger.log(level: .info, "\n 🧪 Starting test for \(transport.name) 🧪")
-                TestController.sharedInstance.test(transport: transport, interface: interfaceName, debugPrints: debugPrints)
+                TestController.sharedInstance.test(transport: transport, debugPrints: debugPrints)
             }
             
             if (runWebTests)
@@ -89,68 +89,9 @@ struct CanaryTest
                 {
                     uiLogger.info("\n 🧪 Starting web test for \(webTest.website) 🧪")
                     print("\n 🧪 Starting web test for \(webTest.website) 🧪")
-                    TestController.sharedInstance.test(webTest: webTest, interface: interfaceName, debugPrints: debugPrints)
+                    TestController.sharedInstance.test(webTest: webTest, debugPrints: debugPrints)
                 }
             }
-        }
-    }
-    
-    func guessUserInterface() -> String?
-    {
-        var allInterfaces = Interface.allInterfaces()
-        
-        // Get interfaces sorted by name
-        allInterfaces.sort(by: {
-            (interfaceA, interfaceB) -> Bool in
-            
-            return interfaceA.name < interfaceB.name
-        })
-        
-        print("\nUser did not indicate a preferred interface. Printing all available interfaces.")
-        
-        let filteredInterfaces = allInterfaces.filter
-        {
-            (thisInterface: Interface) -> Bool in
-            
-            guard let thisAddress = thisInterface.address
-            else { return false }
-            
-            guard thisAddress != "127.0.0.1"
-            else { return false }
-            
-            guard thisAddress != "::1"
-            else { return false }
-            
-            guard thisAddress != "fe80::1"
-            else { return false }
-            
-            guard !thisAddress.starts(with: "fe80")
-            else { return false }
-            
-            return true
-        }
-        
-        print("Filtered interfaces:")
-        for shortListInterface in filteredInterfaces { print("\(shortListInterface.name): \(shortListInterface.debugDescription)")}
-        
-        // Return the first interface that begins with the letter e
-        // Note: this is just a best guess based on what we understand to be a common scenario
-        // The user should use the interface flag if they have something different
-        
-        if let ipv4Interface = filteredInterfaces.first(where: {$0.family == .ipv4})
-        {
-            return ipv4Interface.name
-        }
-        else
-        {
-            guard let bestGuess = filteredInterfaces.firstIndex(where: { $0.name.hasPrefix("e") })
-            else
-            {
-                print("\nWe were unable to identify a likely interface name. Please try running the program again using the interface flag and one of the other listed interfaces.\n")
-                return nil
-            }
-            
-            return allInterfaces[bestGuess].name
         }
     }
     

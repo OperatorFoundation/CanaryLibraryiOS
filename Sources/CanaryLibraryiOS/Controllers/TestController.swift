@@ -141,7 +141,7 @@ class TestController
         }
     }
     
-    func test(transport: Transport, interface: String?, debugPrints: Bool = false)
+    func test(transport: Transport, debugPrints: Bool = false)
     {
         print("Testing \(transport.name) transport...")
         
@@ -153,7 +153,7 @@ class TestController
         }
     }
     
-    func test(webTest: WebTest, interface: String?, debugPrints: Bool = false)
+    func test(webTest: WebTest, debugPrints: Bool = false)
     {
         print("Testing web address \(webTest)")
         
