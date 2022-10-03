@@ -43,35 +43,13 @@ struct CanaryTest
         // Make sure we have everything we need first
         guard checkSetup() else { return }
         
-        
-//        var interfaceName: String
-//
-//        if interface != nil
-//        {
-//            // Use the user provided interface name
-//            interfaceName = interface!
-//            print("Running tests using the user selected interface \(interfaceName)")
-//        }
-//        else
-//        {
-//            // Try to guess the interface, if we cannot then give up
-//            guard let name = guessUserInterface()
-//            else { return }
-//
-//            interfaceName = name
-//
-//            print("\nWe will try using the \(interfaceName) interface. If Canary fails to capture data, it may be because this is not the correct interface. Please try running the program again using the interface flag and one of the other listed interfaces.\n")
-//        }
-//
-//        uiLogger.info("Selected an interface for running test: \(interfaceName)\n")
-        
         canaryTestQueue.async
         {
-            runAllTests(runWebTests: runWebTests)
+            runAllTests()
         }
     }
     
-    func runAllTests(runWebTests: Bool)
+    func runAllTests()
     {
         for i in 1...testCount
         {
@@ -117,7 +95,7 @@ struct CanaryTest
         guard prepareTransports()
         else { return false }
 
-        uiLogger.info("✔️ Check setup completed")
+        uiLogger.info("✔️ Check setup complete")
         return true
     }
     
@@ -137,7 +115,7 @@ struct CanaryTest
             configDirectoryURL.stopAccessingSecurityScopedResource()
         }
         
-        // Does the Resources Directory Exist?
+        // Does the Config Directory Exist?
         uiLogger.info("\n✔️ Config directory: \(configDirectoryURL.path)\n")
         guard FileManager.default.fileExists(atPath: configDirectoryURL.path)
         else
