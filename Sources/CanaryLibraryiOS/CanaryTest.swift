@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 import Foundation
-
+import Gardener
 import NetUtils
 
 struct CanaryTest
@@ -125,53 +125,40 @@ struct CanaryTest
         }
         
         var error: NSError? = nil
-        NSFileCoordinator().coordinate(readingItemAt: configDirectoryURL, error: &error)
+        
+        //Gardener stuff
+        guard let configFiles = File.contentsOfDirectory(atPath: configDirectoryURL.path) else
         {
-            directoryURL in
-            
-            let keys = [URLResourceKey.isDirectoryKey]
-            
-            guard let fileArray = FileManager.default.enumerator(at: configDirectoryURL, includingPropertiesForKeys: keys) else
+            return false
+        }
+        
+        for configFile in configFiles
+        {
+            let configURL = configDirectoryURL.appendingPathComponent(configFile)
+            guard !File.isDirectory(configURL.path) else
             {
-                uiLogger.error("\n‼️ Failed to get a list of URL's at the config directory: \(configDirectoryURL.path)\n")
-                return
+                continue
             }
-                
-            for case let fileURL as URL in fileArray
+            
+            for thisTransportName in possibleTransportNames
             {
-
-                guard let resourceValues = try? fileURL.resourceValues(forKeys: Set<URLResourceKey>(keys)),
-                    let isDirectory = resourceValues.isDirectory
-                else
+                let transportTestName = configURL.deletingPathExtension().lastPathComponent
+                if transportTestName.lowercased().contains(thisTransportName.lowercased())
                 {
-                    continue
-                }
-
-                if isDirectory
-                {
-                    continue
-                }
-                
-                for thisTransportName in possibleTransportNames
-                {
-                    let transportTestName = fileURL.deletingPathExtension().lastPathComponent
-                    
-                    if transportTestName.lowercased().contains(thisTransportName.lowercased())
+                    if let newTransport = Transport(name: transportTestName, typeString: thisTransportName, configPath: configURL.path)
                     {
-                        if let newTransport = Transport(name: transportTestName, typeString: thisTransportName, configPath: fileURL.path)
-                        {
-                            testingTransports.append(newTransport)
-                            uiLogger.info("\n✔️ \(newTransport.name) test is ready\n")
-                        }
-                        else
-                        {
-                            uiLogger.error("⚠️ Failed to create a new transport using the provided config at \(fileURL.path)")
-                            continue
-                        }
+                        testingTransports.append(newTransport)
+                        uiLogger.info("\n✔️ \(newTransport.name) test is ready\n")
+                    }
+                    else
+                    {
+                        uiLogger.error("⚠️ Failed to create a new transport using the provided config at \(configURL.path)")
+                        continue
                     }
                 }
             }
         }
+
         
         guard !testingTransports.isEmpty
         else
