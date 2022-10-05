@@ -30,7 +30,7 @@ import Foundation
 var saveDirectoryPath = ""
 
 var testingTransports = [Transport]()
-let possibleTransportNames = ["shadowsocks", "replicant"]
+let possibleTransportNames = ["shadow", "replicant"]
 
 let httpRequestString = "GET / HTTP/1.0\r\nConnection: close\r\n\r\n"
 let canaryString = "Yeah!\n"
