@@ -86,58 +86,53 @@ class TestController
         guard let resultData = resultString.data(using: .utf8)
             else { return false }
         
-        do
+        guard let resultFileURL = getDocumentURL() else
         {
-            let resultDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            let resultFileURL = resultDirectory.appendingPathComponent(resultsFileName)
-            
-            if FileManager.default.fileExists(atPath: resultFileURL.path)
+            print("Unable to save result data.")
+            return false
+        }
+        
+        if FileManager.default.fileExists(atPath: resultFileURL.path)
+        {
+            // We already have a file at this address let's add our results to the end of it.
+            guard let fileHandler = FileHandle(forWritingAtPath: resultFileURL.path)
+                else
             {
-                // We already have a file at this address let's add our results to the end of it.
-                guard let fileHandler = FileHandle(forWritingAtPath: resultFileURL.path)
-                    else
-                {
-                    uiLogger.info("\n🛑  Error creating a file handler to write to \(resultFileURL.path)\n")
-                    return false
-                }
-                
-                fileHandler.seekToEndOfFile()
-                fileHandler.write(resultData)
-                fileHandler.closeFile()
-                
-                uiLogger.info("\nSaved test results to file: \(resultFileURL.path)")
-                return true
+                uiLogger.info("\n🛑  Error creating a file handler to write to \(resultFileURL.path)\n")
+                return false
+            }
+            
+            fileHandler.seekToEndOfFile()
+            fileHandler.write(resultData)
+            fileHandler.closeFile()
+            
+            uiLogger.info("\nSaved test results to file: \(resultFileURL.path)")
+            return true
+        }
+        else
+        {
+            // Make a new csv file for our test results
+            // The first row should be our labels
+            let labelRow = "TestDate, ServerIP, Transport, Success\n"
+            guard let labelData = labelRow.data(using: .utf8)
+                else { return false }
+            
+            // Append our results to the label row
+            let newFileData = labelData + resultData
+            
+            // Save the new file
+            let saved = FileManager.default.createFile(atPath: resultFileURL.path, contents: newFileData, attributes: nil)
+            
+            if saved
+            {
+                print("Test results saved to file: \(resultFileURL.path)")
             }
             else
             {
-                // Make a new csv file for our test results
-                // The first row should be our labels
-                let labelRow = "TestDate, ServerIP, Transport, Success\n"
-                guard let labelData = labelRow.data(using: .utf8)
-                    else { return false }
-                
-                // Append our results to the label row
-                let newFileData = labelData + resultData
-                
-                // Save the new file
-                let saved = FileManager.default.createFile(atPath: resultFileURL.path, contents: newFileData, attributes: nil)
-                
-                if saved
-                {
-                    print("Test results saved to file: \(resultFileURL.path)")
-                }
-                else
-                {
-                    print("Unable to save the results file.")
-                }
-                
-                return saved
+                print("Unable to save the results file.")
             }
-        }
-        catch
-        {
-            print("Failed to find the document directory. Error: \(error)")
-            return false
+            
+            return saved
         }
     }
     
@@ -163,6 +158,40 @@ class TestController
         {
             uiLogger.info("\n🛑  Received a nil result when testing \(webTest.name) web address.")
         }
+    }
+    
+    func getDocumentURL() -> URL?
+    {
+        let directoryURL: URL
+        
+        if saveDirectoryPath.isEmpty
+        {
+            if let defaultDirectory = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            {
+                directoryURL = defaultDirectory
+            }
+            else
+            {
+                print("An error occurred while trying to create a result directory URL.")
+                return nil
+            }
+        }
+        else
+        {
+            if FileManager.default.fileExists(atPath: saveDirectoryPath)
+            {
+                directoryURL = URL(fileURLWithPath: saveDirectoryPath, isDirectory: true)
+            }
+            else
+            {
+                return nil
+            }
+        }
+        
+        // Add a filename that includes the date
+        let documentURL = directoryURL.appendingPathComponent (resultsFileName + getNowAsString() + "." + resultsExtension)
+        
+        return documentURL
     }
     
     func getNowAsString() -> String

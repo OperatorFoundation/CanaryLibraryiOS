@@ -45,6 +45,5 @@ let diario = WebTest(website: "https://diariodecuba.com", name: "diario", port: 
 
 let allWebTests = [facebook, cnn, wikipedia, ymedio, cnet]
 
-let stateDirectoryPath = "TransportState"
-
-let resultsFileName = "CanaryResults.csv"
+let resultsFileName = "CanaryResults"
+let resultsExtension = "csv"

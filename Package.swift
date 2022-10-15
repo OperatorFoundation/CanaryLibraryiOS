@@ -6,6 +6,7 @@ import PackageDescription
 let package = Package(
     name: "CanaryLibraryiOS",
     platforms: [
+        .macOS(.v12),
         .iOS(.v15)
     ],
     products: [
@@ -17,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-log.git", from: "1.4.2"),
         //.package(url: "https://github.com/OperatorFoundation/ReplicantSwiftClient.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/ShadowSwift.git", branch: "main"),
-        .package(url: "https://github.com/OperatorFoundation/swift-netutils.git", from: "4.3.0"),
+        .package(url: "https://github.com/OperatorFoundation/swift-netutils.git", branch: "main"),
     ],
     targets: [
         .target(
