@@ -93,7 +93,7 @@ struct Transport
 enum TransportType: String
 {
     case replicant = "replicant"
-    case shadowsocks = "shadowsocks"
+    case shadowsocks = "shadow"
 }
 
 enum TransportConfig
