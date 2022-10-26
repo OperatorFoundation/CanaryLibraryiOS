@@ -42,4 +42,3 @@ struct TestResult
     var success = false
     
 }
-

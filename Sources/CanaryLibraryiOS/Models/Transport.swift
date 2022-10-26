@@ -63,16 +63,6 @@ struct Transport
         switch newTransportType
         {
             case .replicant:
-//                guard let replicantConfig = ReplicantConfig(withConfigAtPath: configPath)
-//                else
-//                {
-//                    uiLogger.error("Failed to create a Replicant config.")
-//                    return nil
-//                }
-//
-//                self.config = TransportConfig.replicantConfig(replicantConfig)
-//                self.serverIP = replicantConfig.serverIP
-//                self.port = replicantConfig.port
                 uiLogger.error("Failed to create a Replicant config, Replicant is not currently supported.")
                 return nil
                 
@@ -83,10 +73,10 @@ struct Transport
                     uiLogger.error("\n Unable to parse the ShadowSocks config at \(configPath)")
                     return nil
                 }
-                
                 self.config = TransportConfig.shadowsocksConfig(shadowConfig)
                 self.serverIP = shadowConfig.serverIP
                 self.port = shadowConfig.port
+                
             case .starbridge:
                 guard let starbridgeConfig = StarbridgeClientConfig(withConfigAtPath: configPath)
                 else
@@ -94,7 +84,6 @@ struct Transport
                     uiLogger.error("\n Unable to parse the Starbridge config at \(configPath)")
                     return nil
                 }
-                
                 self.config = TransportConfig.starbridgeConfig(starbridgeConfig)
                 self.serverIP = starbridgeConfig.replicantConfig.serverIP
                 self.port = starbridgeConfig.replicantConfig.port

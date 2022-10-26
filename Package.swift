@@ -16,16 +16,16 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.4.2"),
-        //.package(url: "https://github.com/OperatorFoundation/ReplicantSwiftClient.git", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/ShadowSwift.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/swift-netutils.git", branch: "main"),
-        .package(url: "https://github.com/OperatorFoundation/Starbridge.git", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Starbridge.git", branch: "main")
     ],
     targets: [
         .target(
             name: "CanaryLibraryiOS",
             dependencies: [
-                //"ReplicantSwiftClient",
+                "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",
                 .product(name: "Logging", package: "swift-log"),

@@ -9,9 +9,10 @@ import Foundation
 import Logging
 
 import Net
-//import ReplicantSwiftClient
-//import ReplicantSwift
+import ReplicantSwift
 import ShadowSwift
+import Starbridge
+import TransmissionTransport
 import Transport
 
 class TransportController
@@ -36,6 +37,8 @@ class TransportController
                 launchReplicant()
             case .shadowsocks:
                 launchShadow()
+            case .starbridge:
+                launchStarbridge()
         }
     }
     
@@ -83,32 +86,39 @@ class TransportController
             default:
                 uiLogger.error("Invalid ShadowSocks config.")
                 return
+        }
+    }
+    
+    func launchStarbridge()
+    {
+        switch transport.config
+        {
+            case .starbridgeConfig(let starbridgeConfig):
+                let starburstConfig = StarburstConfig.SMTPClient
+                let starbridge = Starbridge(logger: uiLogger, config: starburstConfig)
                 
+                do
+                {
+                    let starbridgeConnection = try starbridge.connect(config: starbridgeConfig)
+                    let starbridgeTransportConnection = TransmissionTransport.TransmissionToTransportConnection({return starbridgeConnection})
+                    self.connection = starbridgeTransportConnection
+                    starbridgeTransportConnection.stateUpdateHandler = self.handleStateUpdate
+                    starbridgeTransportConnection.start(queue: transportQueue)
+                }
+                catch
+                {
+                    uiLogger.error("Canary.TransportController: Failed to create a Starbridge connection: \(error)")
+                    handleStateUpdate(.failed(NWError.posix(.ECONNREFUSED)))
+                }
+                
+            default:
+                uiLogger.error("Canary.TransportController: Invalid Starbridge config.")
+                return
         }
     }
     
     func launchReplicant()
     {
-//        switch transport.config
-//        {
-//            case .replicantConfig(let replicantConfig):
-//                let replicantFactory = ReplicantConnectionFactory(config: replicantConfig, log: uiLogger)
-//
-//                guard var replicantConnection = replicantFactory.connect(using: .tcp)
-//                else
-//                {
-//                    print("Failed to create a Replicant connection.")
-//                    return
-//                }
-//
-//                connection = replicantConnection
-//                replicantConnection.stateUpdateHandler = self.handleStateUpdate
-//                replicantConnection.start(queue: transportQueue)
-//
-//            default:
-//                uiLogger.error("Invalid Replicant config.")
-//                return
-//        }
         print("Replicant is not currently supported.")
     }
 }
