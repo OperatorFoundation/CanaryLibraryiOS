@@ -28,7 +28,7 @@ struct CanaryTest
 {
     var canaryTestQueue = DispatchQueue(label: "CanaryTests")
     var configDirectoryURL: URL
-    var savePath: String?
+    var resultsDirectoryURL: URL?
     var testCount: Int = 1
     var debugPrints: Bool
     var runWebTests: Bool
@@ -76,9 +76,9 @@ struct CanaryTest
     {
         uiLogger.info("\n🔍 Checking your setup...\n")
         
-        if (savePath != nil)
+        if (resultsDirectoryURL != nil)
         {
-            saveDirectoryPath = savePath!
+            saveDirectoryPath = resultsDirectoryURL!.path
             
             // Does the save directory exist?
             guard FileManager.default.fileExists(atPath: saveDirectoryPath)
