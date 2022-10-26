@@ -19,6 +19,7 @@ let package = Package(
         //.package(url: "https://github.com/OperatorFoundation/ReplicantSwiftClient.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/ShadowSwift.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/swift-netutils.git", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Starbridge.git", branch: "main"),
     ],
     targets: [
         .target(
@@ -26,6 +27,7 @@ let package = Package(
             dependencies: [
                 //"ReplicantSwiftClient",
                 "ShadowSwift",
+                "Starbridge",
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "NetUtils", package: "swift-netutils")
             ]),
