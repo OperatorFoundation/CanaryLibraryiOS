@@ -9,29 +9,27 @@ Canary will run a series of transport tests based on the configs that you provid
 Currently [Shadow](https://github.com/OperatorFoundation/ShadowSwift.git) and [Starbridge](https://github.com/OperatorFoundation/Starbridge.git) tests are supported. Replicant support is underway, and will be capable of mimicking other transports when it is complete.
 
 ## Using the Library
-
 To use the library you only need to create an instance of Canary and call `runTest()` on that instance.
 
-The Canary initializer has many optional parameters with default values:
-
-```
-public required init(configDirectoryURL: URL, resultsDirectoryURL: URL? = nil, logger: Logger, timesToRun: Int = 1, debugPrints: Bool = false, runWebTests: Bool = false)
-```
-- configDirectoryURL: The URL for the directory where all of the config files for the transports to be tested can be found
-- resultsDirectoryURL: *optional* The URL for the directory where the results files should be saved
-- logger: An instance of [swift-log](https://github.com/apple/swift-log.git) Logger
-- timesToRun: *default is 1* an Int representing the number of times you would like Canary to repeat testing all of the transports it finds valid configs for in the provided config directory. *note: these tests will be repeated immediately*
-- debugPrints: *default is false* a Bool indicating whether you would like Caanry to run in a verbose manner.
-- #### runWebTests: *default is false* this option is not yet implemented and argument should not be supplied so that the default value of false remains.
-
+### Quick Start
 To create and run a Canary instance where you only provide the minimum required arguments and allow Canary to use the default settings for everything else:
-
 ```
 let canary = Canary(configDirectoryURL: configDirectory, logger: logger)
 canary.runTest()
 ```
 
-        
+#### Parameters
+The Canary initializer has additional parameters with default values:
+```
+public required init(configDirectoryURL: URL, resultsDirectoryURL: URL? = nil, logger: Logger, timesToRun: Int = 1, debugPrints: Bool = false, runWebTests: Bool = false)
+```
+- **configDirectoryURL**: The URL for the directory where all of the config files for the transports to be tested can be found.
+- **resultsDirectoryURL**: The URL for the directory where the results files should be saved. *(defaults to the user's documents directory)*
+- **logger**: An instance of [swift-log](https://github.com/apple/swift-log.git) Logger.
+- **timesToRun**:  An Int representing the number of times you would like Canary to repeat testing all of the transports it finds valid configs for in the provided config directory. These tests will be repeated immediately. *(the default is 1)*
+- **debugPrints**:  A Boolean indicating whether you would like Caanry to run in a verbose manner. *(the default is false)*
+- **runWebTests**: This option is not yet fully implemented and the argument should not be supplied so that the default value of false remains. *(the default is false)*
+    
 ## Transport Config files
 
 See the documenation for a specific transport if you need instructions on how to generate config files for Canary supported transports:
