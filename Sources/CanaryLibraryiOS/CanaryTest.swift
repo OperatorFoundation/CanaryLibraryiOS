@@ -30,7 +30,6 @@ struct CanaryTest
     var configDirectoryURL: URL
     var savePath: String?
     var testCount: Int = 1
-    var interface: String?
     var debugPrints: Bool
     var runWebTests: Bool
     
