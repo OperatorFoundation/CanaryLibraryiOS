@@ -1,6 +1,9 @@
 # CanaryLibraryiOS
 
 Canary library for iOS applications. Based on the [original project](https://github.com/OperatorFoundation/CanaryLibrary.git) written in Swift.
+This library is provided as a swift package. For an example of how to use this library in an iOS application, see the [CanaryiOS example app](https://github.com/OperatorFoundation/CanaryiOS.git).
+
+## Canary
 
 Canary is a tool for testing transport connections and recording the results in an easy to share csv format. Canary compiles the results in a daily digest as a csv file with a name that includes the date.
 
@@ -27,7 +30,7 @@ public required init(configDirectoryURL: URL, resultsDirectoryURL: URL? = nil, l
 - **resultsDirectoryURL**: The URL for the directory where the results files should be saved. *(defaults to the user's documents directory)*
 - **logger**: An instance of [swift-log](https://github.com/apple/swift-log.git) Logger.
 - **timesToRun**:  An Int representing the number of times you would like Canary to repeat testing all of the transports it finds valid configs for in the provided config directory. These tests will be repeated immediately. *(the default is 1)*
-- **debugPrints**:  A Boolean indicating whether you would like Caanry to run in a verbose manner. *(the default is false)*
+- **debugPrints**:  A Boolean indicating whether you would like Canary to run in a verbose manner. *(the default is false)*
 - **runWebTests**: This option is not yet fully implemented and the argument should not be supplied so that the default value of false remains. *(the default is false)*
     
 ## Transport Config files
