@@ -57,7 +57,6 @@ class TransportConnectionTest
                 }
                 else
                 {
-                    uiLogger.info("\n<--- Canary is still looking for the correct result, read again.")
                     self.read(completionHandler: completionHandler)
                 }
             }
