@@ -20,7 +20,7 @@ class TransportController
     let transportQueue = DispatchQueue(label: "TransportQueue")
     var transport: Transport
     var connectionCompletion: ((Connection?) -> Void)?
-    var connection: Connection?
+    var connection: Connection? // TODO: Migrate to Transmission API instead of Transport
     
     init(transport: Transport, log: Logger)
     {
@@ -70,6 +70,8 @@ class TransportController
         switch transport.config
         {
             case .shadowsocksConfig(let shadowConfig):
+                // TODO: Use the ShadowClientConnection initializer to get a Transmission connection instead of Transport Connection
+                // TODO: Update ShadowClientConnection to have an initalizer that takes a ShadowConfig
                 let shadowFactory = ShadowConnectionFactory(config: shadowConfig, logger: uiLogger)
                                 
                 guard var shadowConnection = shadowFactory.connect(using: .tcp)
@@ -94,6 +96,7 @@ class TransportController
         switch transport.config
         {
             case .starbridgeConfig(let starbridgeConfig):
+                
                 let starburstConfig = StarburstConfig.SMTPClient
                 let starbridge = Starbridge(logger: uiLogger, config: starburstConfig)
                 
@@ -101,6 +104,7 @@ class TransportController
                 {
                     let starbridgeConnection = try starbridge.connect(config: starbridgeConfig)
                     let starbridgeTransportConnection = TransmissionTransport.TransmissionToTransportConnection({return starbridgeConnection})
+                    
                     self.connection = starbridgeTransportConnection
                     starbridgeTransportConnection.stateUpdateHandler = self.handleStateUpdate
                     starbridgeTransportConnection.start(queue: transportQueue)

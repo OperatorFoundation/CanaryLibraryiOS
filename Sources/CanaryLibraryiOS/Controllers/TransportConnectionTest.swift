@@ -52,7 +52,6 @@ class TransportConnectionTest
                 
                 if self.readBuffer.string.contains("Yeah!\n")
                 {
-                    uiLogger.info("\n<--- Canary read found the correct result.")
                     completionHandler(self.readBuffer)
                     return
                 }
